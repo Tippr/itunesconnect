@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>appdailysales.appdailysales &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for appdailysales.appdailysales</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python</span>
+<span class="c">#</span>
+<span class="c"># appdailysales.py</span>
+<span class="c">#</span>
+<span class="c"># iTune Connect Daily Sales Reports Downloader</span>
+<span class="c"># Copyright 2008-2011 Kirby Turner</span>
+<span class="c">#</span>
+<span class="c"># Version 2.9.2</span>
+<span class="c">#</span>
+<span class="c"># Latest version and additional information available at:</span>
+<span class="c">#   http://appdailysales.googlecode.com/</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># This script will download yesterday&#39;s daily sales report from</span>
+<span class="c"># the iTunes Connect web site.  The downloaded file is stored</span>
+<span class="c"># in the same directory containing the script file.  Note: if</span>
+<span class="c"># the download file already exists then it will be overwritten.</span>
+<span class="c">#</span>
+<span class="c"># The iTunes Connect web site has dynamic urls and form field</span>
+<span class="c"># names.  In other words, these values change from session to</span>
+<span class="c"># session.  So to get to the download file we must navigate  </span>
+<span class="c"># the site and webscrape the pages.  Joy, joy.</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># Contributors:</span>
+<span class="c">#   Leon Ho</span>
+<span class="c">#   Rogue Amoeba Software, LLC</span>
+<span class="c">#   Keith Simmons</span>
+<span class="c">#   Andrew de los Reyes</span>
+<span class="c">#   Maarten Billemont</span>
+<span class="c">#   Daniel Dickison</span>
+<span class="c">#   Mike Kasprzak</span>
+<span class="c">#   Shintaro TAKEMURA</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c"># in the Software without restriction, including without limitation the rights</span>
+<span class="c"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c"># furnished to do so, subject to the following conditions:</span>
+<span class="c"># </span>
+<span class="c"># The above copyright notice and this permission notice shall be included in</span>
+<span class="c"># all copies or substantial portions of the Software.</span>
+<span class="c"># </span>
+<span class="c"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="c"># THE SOFTWARE.</span>
+
+
+<span class="c"># -- Change the following to match your credentials --</span>
+<span class="c"># -- or use the command line options.               --</span>
+<span class="n">appleId</span> <span class="o">=</span> <span class="s">&#39;Your Apple Id&#39;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s">&#39;Your Password&#39;</span>
+<span class="n">outputDirectory</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">unzipFile</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">daysToDownload</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">dateToDownload</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">outputFormat</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">overWriteFiles</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">debug</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="c"># ----------------------------------------------------</span>
+
+
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">cookielib</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">getopt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">StringIO</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">getpass</span>
+
+
+<div class="viewcode-block" id="ITCException"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.ITCException">[docs]</a><span class="k">class</span> <span class="nc">ITCException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">);</span>
+
+
+<span class="c"># The class ReportOptions defines a structure for passing</span>
+<span class="c"># report options to the download routine. The expected</span>
+<span class="c"># data attributes are:</span>
+<span class="c">#   appleId</span>
+<span class="c">#   password</span>
+<span class="c">#   outputDirectory</span>
+<span class="c">#   unzipFile</span>
+<span class="c">#   verbose</span>
+<span class="c">#   daysToDownload</span>
+<span class="c">#   dateToDownload</span>
+<span class="c">#   outputFormat</span>
+<span class="c">#   overWriteFiles</span>
+<span class="c">#   debug</span>
+<span class="c"># Note that the class attributes will default to the global</span>
+<span class="c"># variable value equivalent.</span></div>
+<div class="viewcode-block" id="ReportOptions"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.ReportOptions">[docs]</a><span class="k">class</span> <span class="nc">ReportOptions</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;appleId&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">appleId</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;password&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">password</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;outputDirectory&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outputDirectory</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;unzipFile&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">unzipFile</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;verbose&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">verbose</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;daysToDownload&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">daysToDownload</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;dateToDownload&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dateToDownload</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;outputFormat&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outputFormat</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;overWriteFiles&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">overWriteFiles</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;proxy&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">proxy</span>
+        <span class="k">elif</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s">&#39;debug&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">debug</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="n">attrname</span>
+
+</div>
+<div class="viewcode-block" id="usage"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.usage">[docs]</a><span class="k">def</span> <span class="nf">usage</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;&#39;&#39;usage: </span><span class="si">%s</span><span class="s"> [options]</span>
+<span class="s">Options and arguments:</span>
+<span class="s">-h     : print this help message and exit (also --help)</span>
+<span class="s">-a uid : your apple id (also --appleId)</span>
+<span class="s">-p pwd : your password (also --password)</span>
+<span class="s">-P     : read the password from stdin (also --passwordStdin)</span>
+<span class="s">-o dir : directory where download file is stored, default is the current working directory (also --outputDirectory)</span>
+<span class="s">-v     : verbose output, default is off (also --verbose)</span>
+<span class="s">-u     : unzip download file, default is off (also --unzip)</span>
+<span class="s">-d num : number of days to download, default is 1 (also --days)</span>
+<span class="s">-D mm/dd/yyyy : report date to download, -d option is ignored when -D is used (also --date)</span>
+<span class="s">-f format : output file name format (see strftime; also --format)</span>
+<span class="s">-n      : used with -f, skips downloading of report files that already exist (also --noOverWriteFiles)</span>
+<span class="s">--proxy : URL of the proxy</span>
+<span class="s">--debug : debug output, default is off&#39;&#39;&#39;</span> <span class="o">%</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="processCmdArgs"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.processCmdArgs">[docs]</a><span class="k">def</span> <span class="nf">processCmdArgs</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">appleId</span>
+    <span class="k">global</span> <span class="n">password</span>
+    <span class="k">global</span> <span class="n">outputDirectory</span>
+    <span class="k">global</span> <span class="n">unzipFile</span>
+    <span class="k">global</span> <span class="n">verbose</span>
+    <span class="k">global</span> <span class="n">daysToDownload</span>
+    <span class="k">global</span> <span class="n">dateToDownload</span>
+    <span class="k">global</span> <span class="n">outputFormat</span>
+    <span class="k">global</span> <span class="n">overWriteFiles</span>
+    <span class="k">global</span> <span class="n">proxy</span>
+    <span class="k">global</span> <span class="n">debug</span>
+
+    <span class="c"># Check for command line options. The command line options</span>
+    <span class="c"># override the globals set above if present.</span>
+    <span class="k">try</span><span class="p">:</span> 
+        <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&#39;ha:p:Po:uvd:D:f:n&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;help&#39;</span><span class="p">,</span> <span class="s">&#39;appleId=&#39;</span><span class="p">,</span> <span class="s">&#39;password=&#39;</span><span class="p">,</span> <span class="s">&#39;passwordStdin&#39;</span><span class="p">,</span> <span class="s">&#39;outputDirectory=&#39;</span><span class="p">,</span> <span class="s">&#39;unzip&#39;</span><span class="p">,</span> <span class="s">&#39;verbose&#39;</span><span class="p">,</span> <span class="s">&#39;days=&#39;</span><span class="p">,</span> <span class="s">&#39;date=&#39;</span><span class="p">,</span> <span class="s">&#39;format=&#39;</span><span class="p">,</span> <span class="s">&#39;noOverWriteFiles&#39;</span><span class="p">,</span> <span class="s">&#39;proxy=&#39;</span><span class="p">,</span> <span class="s">&#39;debug&#39;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="n">getopt</span><span class="o">.</span><span class="n">GetoptError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="c">#print help information and exit</span>
+        <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>  <span class="c"># will print something like &quot;option -x not recongized&quot;</span>
+        <span class="n">usage</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">2</span>
+
+    <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-h&#39;</span><span class="p">,</span> <span class="s">&#39;--help&#39;</span><span class="p">):</span>
+            <span class="n">usage</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="s">&#39;--appleId&#39;</span><span class="p">):</span>
+            <span class="n">appleId</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-p&#39;</span><span class="p">,</span> <span class="s">&#39;--password&#39;</span><span class="p">):</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-P&#39;</span><span class="p">,</span> <span class="s">&#39;--passwordStdin&#39;</span><span class="p">):</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="s">&#39;--outputDirectory&#39;</span><span class="p">):</span>
+            <span class="n">outputDirectory</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-u&#39;</span><span class="p">,</span> <span class="s">&#39;--unzip&#39;</span><span class="p">):</span>
+            <span class="n">unzipFile</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="s">&#39;--verbose&#39;</span><span class="p">):</span>
+            <span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-d&#39;</span><span class="p">,</span> <span class="s">&#39;--days&#39;</span><span class="p">):</span>
+            <span class="n">daysToDownload</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-D&#39;</span><span class="p">,</span> <span class="s">&#39;--date&#39;</span><span class="p">):</span>
+            <span class="n">dateToDownload</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;--format&#39;</span><span class="p">):</span>
+            <span class="n">outputFormat</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--noOverWriteFiles&#39;</span><span class="p">):</span>
+            <span class="n">overWriteFiles</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="s">&#39;--proxy&#39;</span><span class="p">):</span>
+            <span class="n">proxy</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;--debug&#39;</span><span class="p">):</span>
+            <span class="n">debug</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># Turn on verbose if debug option is on.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;unhandled option&#39;</span>
+
+
+<span class="c"># There is an issue with Python 2.5 where it assumes the &#39;version&#39;</span>
+<span class="c"># cookie value is always interger.  However, itunesconnect.apple.com</span>
+<span class="c"># returns this value as a string, i.e., &quot;1&quot; instead of 1.  Because</span>
+<span class="c"># of this we need a workaround that &quot;fixes&quot; the version field.</span>
+<span class="c">#</span>
+<span class="c"># More information at: http://bugs.python.org/issue3924</span></div>
+<div class="viewcode-block" id="MyCookieJar"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.MyCookieJar">[docs]</a><span class="k">class</span> <span class="nc">MyCookieJar</span><span class="p">(</span><span class="n">cookielib</span><span class="o">.</span><span class="n">CookieJar</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cookie_from_cookie_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tup</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">standard</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">tup</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">standard</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">standard</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="k">return</span> <span class="n">cookielib</span><span class="o">.</span><span class="n">CookieJar</span><span class="o">.</span><span class="n">_cookie_from_cookie_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tup</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="showCookies"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.showCookies">[docs]</a><span class="k">def</span> <span class="nf">showCookies</span><span class="p">(</span><span class="n">cj</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">cookie</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cj</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">index</span><span class="p">,</span> <span class="s">&#39; : &#39;</span><span class="p">,</span> <span class="n">cookie</span>
+    
+</div>
+<div class="viewcode-block" id="readHtml"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.readHtml">[docs]</a><span class="k">def</span> <span class="nf">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">urlHandle</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">urlHandle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="s">&#39;temp.html&#39;</span><span class="p">),</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">html</span>
+
+</div>
+<div class="viewcode-block" id="downloadFile"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.downloadFile">[docs]</a><span class="k">def</span> <span class="nf">downloadFile</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;-- begin script --&#39;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">)</span>
+
+    <span class="n">urlITCBase</span> <span class="o">=</span> <span class="s">&#39;https://itunesconnect.apple.com</span><span class="si">%s</span><span class="s">&#39;</span>
+
+    <span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>                      <span class="c"># proxy support</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>                  <span class="c"># proxy support</span>
+        <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">urllib2</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">({</span><span class="s">&quot;https&quot;</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">proxy</span><span class="p">}))</span>      <span class="c"># proxy support</span>
+
+    <span class="n">cj</span> <span class="o">=</span> <span class="n">MyCookieJar</span><span class="p">();</span>
+    <span class="n">cj</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">cookielib</span><span class="o">.</span><span class="n">DefaultCookiePolicy</span><span class="p">(</span><span class="n">rfc2965</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+    <span class="n">cjhdr</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPCookieProcessor</span><span class="p">(</span><span class="n">cj</span><span class="p">)</span>
+    <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cjhdr</span><span class="p">)</span>             <span class="c"># proxy support</span>
+    <span class="n">opener</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="o">*</span><span class="n">handlers</span><span class="p">)</span>        <span class="c"># proxy support</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Signing into iTunes Connect web site.&#39;</span>
+
+    <span class="c"># Go to the iTunes Connect website and retrieve the</span>
+    <span class="c"># form action for logging into the site.</span>
+    <span class="n">urlWebsite</span> <span class="o">=</span> <span class="n">urlITCBase</span> <span class="o">%</span> <span class="s">&#39;/WebObjects/iTunesConnect.woa&#39;</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlWebsite</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;&quot; action=&quot;(.*)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+    <span class="n">urlActionLogin</span> <span class="o">=</span> <span class="n">urlITCBase</span> <span class="o">%</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="c"># Login to iTunes Connect web site and go to the sales </span>
+    <span class="c"># report page, get the form action url and form fields.  </span>
+    <span class="c"># Note the sales report page will actually load a blank </span>
+    <span class="c"># page that redirects to the static URL. Best guess here </span>
+    <span class="c"># is that the server is setting some session variables </span>
+    <span class="c"># or something.</span>
+    <span class="n">webFormLoginData</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;theAccountName&#39;</span><span class="p">:</span><span class="n">options</span><span class="o">.</span><span class="n">appleId</span><span class="p">,</span> <span class="s">&#39;theAccountPW&#39;</span><span class="p">:</span><span class="n">options</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="s">&#39;1.Continue&#39;</span><span class="p">:</span><span class="s">&#39;0&#39;</span><span class="p">})</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlActionLogin</span><span class="p">,</span> <span class="n">webFormLoginData</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;Your Apple ID or password was entered incorrectly.&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ITCException</span><span class="p">,</span> <span class="s">&#39;User or password incorrect.&#39;</span>
+
+    <span class="c"># Find the Sales and Trends URL.</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Accessing Sales and Trends reporting web site.&#39;</span>
+    
+    <span class="c"># Sometimes the vendor default page does not load right away.</span>
+    <span class="c"># This causes the script to fail, so as a work around, the</span>
+    <span class="c"># script will attempt to load the page 3 times before abend.</span>
+    <span class="n">vendorDefaultPageAttempts</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">while</span> <span class="n">vendorDefaultPageAttempts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vendorDefaultPageAttempts</span> <span class="o">=</span> <span class="n">vendorDefaultPageAttempts</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">urlSalesAndTrends</span> <span class="o">=</span> <span class="s">&#39;https://reportingitc.apple.com/&#39;</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlSalesAndTrends</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="c"># We&#39;re at the vendor default page. Might need additional work if your account</span>
+        <span class="c"># has more than one vendor.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&quot;javax.faces.ViewState&quot; value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+            <span class="n">viewState</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;script id=&quot;defaultVendorPage:(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+            <span class="n">defaultVendorPage</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ajaxName</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;_2&#39;</span><span class="p">,</span> <span class="s">&#39;_0&#39;</span><span class="p">,</span> <span class="n">defaultVendorPage</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;viewState: &#39;</span><span class="p">,</span> <span class="n">viewState</span>
+                <span class="k">print</span> <span class="s">&#39;defaultVendorPage: &#39;</span><span class="p">,</span> <span class="n">defaultVendorPage</span>
+                <span class="k">print</span> <span class="s">&#39;ajaxName: &#39;</span><span class="p">,</span> <span class="n">ajaxName</span>
+            <span class="n">vendorDefaultPageAttempts</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># exit loop</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vendorDefaultPageAttempts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">errMessage</span> <span class="o">=</span> <span class="s">&#39;Unable to load default vendor page.&#39;</span>
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="n">errMessage</span>
+                    <span class="k">raise</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ITCException</span><span class="p">,</span> <span class="n">errMessage</span>
+
+    <span class="c"># This may seem confusing because we just accessed the vendor default page in the </span>
+    <span class="c"># code above. However, the vendor default page as a piece of javascript that runs</span>
+    <span class="c"># once the page is loaded in the browser. The javascript does a resubmit. My guess</span>
+    <span class="c"># is this action is needed to set the default vendor on the server-side. Regardless</span>
+    <span class="c"># we must call the page again but no parsing of the HTML is needed this time around.</span>
+    <span class="n">urlDefaultVendorPage</span> <span class="o">=</span> <span class="s">&#39;https://reportingitc.apple.com/vendor_default.faces&#39;</span>
+    <span class="n">webFormSalesReportData</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;AJAXREQUEST&#39;</span><span class="p">:</span><span class="n">ajaxName</span><span class="p">,</span> <span class="s">&#39;javax.faces.ViewState&#39;</span><span class="p">:</span><span class="n">viewState</span><span class="p">,</span> <span class="s">&#39;defaultVendorPage&#39;</span><span class="p">:</span><span class="n">defaultVendorPage</span><span class="p">,</span> <span class="s">&#39;defaultVendorPage:&#39;</span><span class="o">+</span><span class="n">defaultVendorPage</span><span class="p">:</span><span class="s">&#39;defaultVendorPage:&#39;</span><span class="o">+</span><span class="n">defaultVendorPage</span><span class="p">})</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlDefaultVendorPage</span><span class="p">,</span> <span class="n">webFormSalesReportData</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="c"># Check for notification messages.</span>
+    <span class="n">urlDashboard</span> <span class="o">=</span> <span class="s">&#39;https://reportingitc.apple.com/subdashboard.faces&#39;</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlDashboard</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># Note the (?s) is an inline re.DOTALL, makes . match new lines.</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;(?s)&lt;div class=&quot;notification&quot;&gt;(.*?)&lt;/span&gt;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+        <span class="n">notificationDiv</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;(?s)&lt;td&gt;(.*?)&lt;/td&gt;&#39;</span><span class="p">,</span> <span class="n">notificationDiv</span><span class="p">)</span>
+        <span class="n">notificationMessage</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">notificationMessage</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span> <span class="c"># Do nothing. We&#39;re just checking for notifications.</span>
+
+
+    <span class="c"># Access the sales report page.</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Accessing sales report web page.&#39;</span>
+    <span class="n">urlSalesReport</span> <span class="o">=</span> <span class="s">&#39;https://reportingitc.apple.com/sales.faces&#39;</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlSalesReport</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+
+    <span class="c"># Get the form field names needed to download the report.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&quot;javax.faces.ViewState&quot; value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+        <span class="n">viewState</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;theForm:j_id_jsp_[0-9]*_38&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+        <span class="n">dailyName</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ajaxName</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;._38&#39;</span><span class="p">,</span> <span class="s">&#39;_2&#39;</span><span class="p">,</span> <span class="n">dailyName</span><span class="p">)</span>
+        <span class="n">dateName</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;._38&#39;</span><span class="p">,</span> <span class="s">&#39;_8&#39;</span><span class="p">,</span> <span class="n">dailyName</span><span class="p">)</span>
+        <span class="n">selectName</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;._38&#39;</span><span class="p">,</span> <span class="s">&#39;_32&#39;</span><span class="p">,</span> <span class="n">dailyName</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;viewState: &#39;</span><span class="p">,</span> <span class="n">viewState</span>
+            <span class="k">print</span> <span class="s">&#39;dailyName: &#39;</span><span class="p">,</span> <span class="n">dailyName</span>
+            <span class="k">print</span> <span class="s">&#39;ajaxName: &#39;</span><span class="p">,</span> <span class="n">ajaxName</span>
+            <span class="k">print</span> <span class="s">&#39;dateName: &#39;</span><span class="p">,</span> <span class="n">dateName</span>
+            <span class="k">print</span> <span class="s">&#39;selectName:&#39;</span><span class="p">,</span> <span class="n">selectName</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">errMessage</span> <span class="o">=</span> <span class="s">&#39;Unable to load the sales report web page at this time. A number of reasons can cause this including delayed reporting, unsigned contracts, and change to the web site breaking this script. Try again later or sign into iTunes Connect and verify access.&#39;</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">errMessage</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ITCException</span><span class="p">,</span> <span class="n">errMessage</span>
+
+
+    <span class="c"># Get the list of available dates.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># Note the (?s) is an inline re.DOTALL, makes . match new lines.</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;(?s)&lt;div class=&quot;pickList&quot;&gt;(.*?)&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+        <span class="n">dateListAvailableDays</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&lt;option value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dateListAvailableWeeks</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&lt;option value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;dateListAvailableDays: &#39;</span><span class="p">,</span> <span class="n">dateListAvailableDays</span>
+            <span class="k">print</span> <span class="s">&#39;dateListAvailableWeeks: &#39;</span><span class="p">,</span> <span class="n">dateListAvailableWeeks</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">errMessage</span> <span class="o">=</span> <span class="s">&#39;Unable to retrieve the list of available dates.&#39;</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">errMessage</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ITCException</span><span class="p">,</span> <span class="n">errMessage</span>
+
+
+    <span class="c"># Click through from the dashboard to the sales page.</span>
+    <span class="n">webFormSalesReportData</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;AJAXREQUEST&#39;</span><span class="p">:</span><span class="n">ajaxName</span><span class="p">,</span> <span class="s">&#39;theForm&#39;</span><span class="p">:</span><span class="s">&#39;theForm&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:xyz&#39;</span><span class="p">:</span><span class="s">&#39;notnormal&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:vendorType&#39;</span><span class="p">:</span><span class="s">&#39;Y&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:datePickerSourceSelectElementSales&#39;</span><span class="p">:</span><span class="n">dateListAvailableDays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;theForm:weekPickerSourceSelectElement&#39;</span><span class="p">:</span><span class="n">dateListAvailableWeeks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;javax.faces.ViewState&#39;</span><span class="p">:</span><span class="n">viewState</span><span class="p">,</span> <span class="n">dailyName</span><span class="p">:</span><span class="n">dailyName</span><span class="p">,</span> <span class="s">&#39;theForm:optInVar&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span>  <span class="s">&#39;theForm:dateType&#39;</span><span class="p">:</span><span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:optInVarRender&#39;</span><span class="p">:</span><span class="s">&#39;false&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:wklyBool&#39;</span><span class="p">:</span><span class="s">&#39;false&#39;</span><span class="p">})</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlSalesReport</span><span class="p">,</span> <span class="n">webFormSalesReportData</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&quot;javax.faces.ViewState&quot; value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+    <span class="n">viewState</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+    <span class="c"># Set the list of report dates.</span>
+    <span class="c"># A better approach is to grab the list of available dates</span>
+    <span class="c"># from the web site instead of generating the dates. Will</span>
+    <span class="c"># consider doing this in the future.</span>
+    <span class="n">reportDates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">dateToDownload</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">daysToDownload</span><span class="p">)):</span>
+            <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">reportDates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">today</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reportDates</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">dateToDownload</span><span class="p">,</span> <span class="s">&#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()]</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;reportDates: &#39;</span><span class="p">,</span> <span class="n">reportDates</span>
+
+
+    <span class="c">####</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Downloading daily sales reports.&#39;</span>
+    <span class="n">unavailableCount</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">downloadReportDate</span> <span class="ow">in</span> <span class="n">reportDates</span><span class="p">:</span>
+        <span class="c"># Set the date within the web page.</span>
+        <span class="n">dateString</span> <span class="o">=</span> <span class="n">downloadReportDate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">dateString</span> <span class="ow">in</span> <span class="n">dateListAvailableDays</span><span class="p">:</span>
+            <span class="c"># If told not to overwrite files, check before downloading</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">overWriteFiles</span> <span class="o">==</span> <span class="bp">False</span><span class="p">):</span>
+                <span class="c"># Only if custom formatting was enabled, we can check if file exists before downloading</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span><span class="p">):</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">downloadReportDate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span><span class="p">)</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">unzipFile</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">filename</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s">&#39;.gz&#39;</span><span class="p">:</span> <span class="c">#Chop off .gz extension if not needed</span>
+                        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span> <span class="n">filename</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                            <span class="k">print</span> <span class="s">&#39;Report file&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s">&#39;exists, skipping.&#39;</span>
+                        <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;Downloading report for: &#39;</span><span class="p">,</span> <span class="n">dateString</span>
+            <span class="n">webFormSalesReportData</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;AJAXREQUEST&#39;</span><span class="p">:</span><span class="n">ajaxName</span><span class="p">,</span> <span class="s">&#39;theForm&#39;</span><span class="p">:</span><span class="s">&#39;theForm&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:xyz&#39;</span><span class="p">:</span><span class="s">&#39;notnormal&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:vendorType&#39;</span><span class="p">:</span><span class="s">&#39;Y&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:datePickerSourceSelectElementSales&#39;</span><span class="p">:</span><span class="n">dateString</span><span class="p">,</span> <span class="s">&#39;theForm:datePickerSourceSelectElementSales&#39;</span><span class="p">:</span><span class="n">dateString</span><span class="p">,</span> <span class="s">&#39;theForm:weekPickerSourceSelectElement&#39;</span><span class="p">:</span><span class="n">dateListAvailableWeeks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;javax.faces.ViewState&#39;</span><span class="p">:</span><span class="n">viewState</span><span class="p">,</span> <span class="n">selectName</span><span class="p">:</span><span class="n">selectName</span><span class="p">})</span>
+            <span class="n">html</span> <span class="o">=</span> <span class="n">readHtml</span><span class="p">(</span><span class="n">opener</span><span class="p">,</span> <span class="n">urlSalesReport</span><span class="p">,</span> <span class="n">webFormSalesReportData</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;&quot;javax.faces.ViewState&quot; value=&quot;(.*?)&quot;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+            <span class="n">viewState</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c"># And finally...we&#39;re ready to download yesterday&#39;s sales report.</span>
+            <span class="n">webFormSalesReportData</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;theForm&#39;</span><span class="p">:</span><span class="s">&#39;theForm&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:xyz&#39;</span><span class="p">:</span><span class="s">&#39;notnormal&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:vendorType&#39;</span><span class="p">:</span><span class="s">&#39;Y&#39;</span><span class="p">,</span> <span class="s">&#39;theForm:datePickerSourceSelectElementSales&#39;</span><span class="p">:</span><span class="n">dateString</span><span class="p">,</span> <span class="s">&#39;theForm:weekPickerSourceSelectElement&#39;</span><span class="p">:</span><span class="n">dateListAvailableWeeks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;javax.faces.ViewState&#39;</span><span class="p">:</span><span class="n">viewState</span><span class="p">,</span> <span class="s">&#39;theForm:downloadLabel2&#39;</span><span class="p">:</span><span class="s">&#39;theForm:downloadLabel2&#39;</span><span class="p">})</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">urlSalesReport</span><span class="p">,</span> <span class="n">webFormSalesReportData</span><span class="p">)</span>
+            <span class="n">urlHandle</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="n">urlHandle</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+                    
+                <span class="c"># Check for the content-disposition. If present then we know we have a </span>
+                <span class="c"># file to download. If not present then an AttributeError exception is</span>
+                <span class="c"># thrown and we assume the file is not available for download.</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">urlHandle</span><span class="o">.</span><span class="n">info</span><span class="p">()</span><span class="o">.</span><span class="n">getheader</span><span class="p">(</span><span class="s">&#39;content-disposition&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c"># Check for an override of the file name. If found then change the file</span>
+                <span class="c"># name to match the outputFormat.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span><span class="p">):</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">downloadReportDate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span><span class="p">)</span>
+
+                <span class="n">filebuffer</span> <span class="o">=</span> <span class="n">urlHandle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">urlHandle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">unzipFile</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="k">print</span> <span class="s">&#39;Unzipping archive file: &#39;</span><span class="p">,</span> <span class="n">filename</span>
+                    <span class="c">#Use GzipFile to de-gzip the data</span>
+                    <span class="n">ioBuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span> <span class="n">filebuffer</span> <span class="p">)</span>
+                    <span class="n">gzipIO</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">(</span> <span class="s">&#39;rb&#39;</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="n">ioBuffer</span> <span class="p">)</span>
+                    <span class="n">filebuffer</span> <span class="o">=</span> <span class="n">gzipIO</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">unzipFile</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">filename</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s">&#39;.gz&#39;</span><span class="p">:</span> <span class="c">#Chop off .gz extension if not needed</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span> <span class="n">filename</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c"># If optionsFormat was used, make sure the directory requested exists</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span><span class="p">):</span>
+                    <span class="n">fileDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fileDirectory</span><span class="p">)</span> <span class="o">==</span> <span class="bp">False</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                            <span class="k">print</span> <span class="s">&#39;Directory&#39;</span><span class="p">,</span> <span class="n">fileDirectory</span><span class="p">,</span> <span class="s">&#39;doesn</span><span class="se">\&#39;</span><span class="s">t exist, creating.&#39;</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">fileDirectory</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="s">&#39;Saving download file:&#39;</span><span class="p">,</span> <span class="n">filename</span>
+
+                <span class="n">downloadFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+                <span class="n">downloadFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filebuffer</span><span class="p">)</span>
+                <span class="n">downloadFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">filename</span> <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> report is not available - try again later.&#39;</span> <span class="o">%</span> <span class="n">dateString</span>
+                <span class="n">unavailableCount</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> report is not available - try again later.&#39;</span> <span class="o">%</span> <span class="n">dateString</span>
+            <span class="n">unavailableCount</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c"># End for downloadReportDate in reportDates:</span>
+    <span class="c">####</span>
+
+    <span class="k">if</span> <span class="n">unavailableCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ITCException</span><span class="p">,</span> <span class="s">&#39;</span><span class="si">%i</span><span class="s"> report(s) not available - try again later&#39;</span> <span class="o">%</span> <span class="n">unavailableCount</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="s">&quot;temp.html&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;-- end of script --&#39;</span>
+
+    <span class="k">return</span> <span class="n">filenames</span>
+
+</div>
+<div class="viewcode-block" id="save_reports"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.save_reports">[docs]</a><span class="k">def</span> <span class="nf">save_reports</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">csv</span>
+    
+    <span class="kn">import</span> <span class="nn">persistence</span> <span class="kn">as</span> <span class="nn">p</span>
+    <span class="kn">from</span> <span class="nn">configuration</span> <span class="kn">import</span> <span class="n">configure</span>
+    
+    <span class="c">#open DB connection</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">configure</span><span class="p">()</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">open_connection</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        
+    <span class="c">#iterate through the reports</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">f</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">row</span>     
+                 
+            <span class="n">myrow</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;sku&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;SKU&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;end_date&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;End Date&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;customer_currency&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Customer Currency&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;begin_date&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Begin Date&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;developer_proceeds&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Developer Proceeds&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;promo_code&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Promo Code&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Title&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;parent_identifier&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Parent Identifier&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;customer_price&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Customer Price&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;period&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Period&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;currency_of_proceeds&#39;</span><span class="p">:</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Currency of Proceeds&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;type_identifier&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Product Type Identifier&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;provider_country&#39;</span>   <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Provider Country&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;country_code&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Country Code&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;apple_identifier&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Apple Identifier&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;version&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Version&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;provider&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Provider&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;units&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Units&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;subscription&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Subscription&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;developer&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Developer&#39;</span><span class="p">],</span>
+                   <span class="s">&#39;publisher_name&#39;</span><span class="p">:</span> <span class="n">get_publisher_name</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Title&#39;</span><span class="p">]),</span>
+                   <span class="s">&#39;publisher_id&#39;</span><span class="p">:</span> <span class="n">get_publisher_id</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Title&#39;</span><span class="p">])}</span>
+            
+            
+            <span class="n">p</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="s">&#39;itunes&#39;</span><span class="p">,</span> <span class="n">myrow</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">myrow</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            
+    <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+
+</div>
+<div class="viewcode-block" id="get_publisher_name"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.get_publisher_name">[docs]</a><span class="k">def</span> <span class="nf">get_publisher_name</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;Tippr&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;Tippr&quot;</span>
+       
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;225 Best Eats&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;225besteats&quot;</span>
+      
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;Q-Pond&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;qpond&quot;</span>
+
+</div>
+<div class="viewcode-block" id="get_publisher_id"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.get_publisher_id">[docs]</a><span class="k">def</span> <span class="nf">get_publisher_id</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;Tippr&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;69df22c235964dfa836ce39d31968987&quot;</span>
+       
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;225 Best Eats&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;07babb4184bc4f3abb2ef8ed92930650&quot;</span>
+      
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s">&#39;Q-Pond&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;bf576fb8354e4f0ea64a425c4fb59d2b&quot;</span>
+
+
+
+</div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.appdailysales.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">processCmdArgs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>    <span class="c"># Will exit if usgae requested or invalid argument found.</span>
+        <span class="k">return</span> <span class="mi">2</span>
+      
+    <span class="c"># Set report options.</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">ReportOptions</span><span class="p">()</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">appleId</span> <span class="o">=</span> <span class="n">appleId</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">outputDirectory</span> <span class="o">=</span> <span class="n">outputDirectory</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">unzipFile</span> <span class="o">=</span> <span class="n">unzipFile</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">daysToDownload</span> <span class="o">=</span> <span class="n">daysToDownload</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">dateToDownload</span> <span class="o">=</span> <span class="n">dateToDownload</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">outputFormat</span> <span class="o">=</span> <span class="n">outputFormat</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">overWriteFiles</span> <span class="o">=</span> <span class="n">overWriteFiles</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+    
+    <span class="c"># Download the file.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="n">downloadFile</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+                
+        <span class="n">save_reports</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="n">ITCException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">e</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

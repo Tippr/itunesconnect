@@ -1,0 +1,135 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webservice.security &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for webservice.security</h1><div class="highlight"><pre>
+<span class="c">#@PydevCodeAnalysisIgnore</span>
+<span class="kn">import</span> <span class="nn">web</span> 
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">appdailysales.configuration</span> <span class="kn">import</span> <span class="n">configure_security</span>
+    
+<span class="n">conf</span> <span class="o">=</span> <span class="n">configure_security</span><span class="p">()</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">database</span><span class="p">(</span><span class="n">dbn</span><span class="o">=</span><span class="s">&#39;postgres&#39;</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbhost&#39;</span><span class="p">),</span>
+        <span class="n">dburl</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dburl&#39;</span><span class="p">),</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbuser&#39;</span><span class="p">),</span>
+        <span class="n">pw</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbpassword&#39;</span><span class="p">),</span>
+        <span class="n">db</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;db&#39;</span><span class="p">))</span>
+
+<span class="n">VALID_KEY</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;[a-zA-Z0-9_-]{1,255}&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="is_valid_key"><a class="viewcode-back" href="../../webservice.html#webservice.security.is_valid_key">[docs]</a><span class="k">def</span> <span class="nf">is_valid_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">VALID_KEY</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="exist_key"><a class="viewcode-back" href="../../webservice.html#webservice.security.exist_key">[docs]</a><span class="k">def</span> <span class="nf">exist_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keys&#39;</span><span class="p">],</span> <span class="n">where</span><span class="o">=</span><span class="s">&#39;key = $key&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="validate_key"><a class="viewcode-back" href="../../webservice.html#webservice.security.validate_key">[docs]</a><span class="k">def</span> <span class="nf">validate_key</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;REQUEST_URI&#39;</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_X_API_KEY&#39;</span><span class="p">)</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">status</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;access_log&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">log</span><span class="p">(</span><span class="s">&#39;invalid key&#39;</span><span class="p">)</span>
+            <span class="n">web</span><span class="o">.</span><span class="n">badrequest</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">exist_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">log</span><span class="p">(</span><span class="s">&#39;access&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span><span class="s">&#39;key not found&#39;</span><span class="p">)</span>
+            <span class="n">web</span><span class="o">.</span><span class="n">forbidden</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

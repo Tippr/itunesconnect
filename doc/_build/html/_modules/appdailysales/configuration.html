@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>appdailysales.configuration &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for appdailysales.configuration</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ConfigParser</span>
+    
+<span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;HOME&quot;</span><span class="p">),</span> <span class="s">&#39;.itunesconnect.cfg&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="configure"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.configure">[docs]</a><span class="k">def</span> <span class="nf">configure</span><span class="p">():</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">,</span> <span class="s">&#39;host&#39;</span><span class="p">,</span> <span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">,</span> <span class="s">&#39;dburl&#39;</span><span class="p">,</span> <span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">,</span> <span class="s">&#39;db&#39;</span><span class="p">,</span> <span class="s">&#39;email_statistics&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;postgres&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Database&quot;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">readfp</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">config</span>
+</div>
+<div class="viewcode-block" id="configure_security"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.configure_security">[docs]</a><span class="k">def</span> <span class="nf">configure_security</span><span class="p">():</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbhost&#39;</span><span class="p">,</span> <span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dburl&#39;</span><span class="p">,</span> <span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;db&#39;</span><span class="p">,</span> <span class="s">&#39;security&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbuser&#39;</span><span class="p">,</span> <span class="s">&#39;postgres&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Security&quot;</span><span class="p">,</span> <span class="s">&#39;dbpassword&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">readfp</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">config</span>
+
+</div>
+<div class="viewcode-block" id="configure_itunes"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.configure_itunes">[docs]</a><span class="k">def</span> <span class="nf">configure_itunes</span><span class="p">():</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s">&quot;iTunes&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;iTunes&quot;</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;ios-stats@tippr.com&#39;</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;iTunes&quot;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;Tippr2011&#39;</span><span class="p">)</span>
+    
+</div>
+<div class="viewcode-block" id="configure_reports"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.configure_reports">[docs]</a><span class="k">def</span> <span class="nf">configure_reports</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">readfp</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">))</span>
+    
+    <span class="n">to</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Reports&quot;</span><span class="p">,</span> <span class="s">&quot;to&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">to</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="smtp_config"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.smtp_config">[docs]</a><span class="k">def</span> <span class="nf">smtp_config</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">readfp</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">))</span>
+    
+    <span class="n">smtp</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Smtp&quot;</span><span class="p">,</span> <span class="s">&quot;smtp&quot;</span><span class="p">)</span>
+    <span class="n">usr</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Smtp&quot;</span><span class="p">,</span> <span class="s">&quot;username&quot;</span><span class="p">)</span>
+    <span class="n">pwd</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Smtp&quot;</span><span class="p">,</span> <span class="s">&quot;password&quot;</span><span class="p">)</span>
+    <span class="n">fromEmail</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Smtp&quot;</span><span class="p">,</span> <span class="s">&quot;from&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">smtp</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">pwd</span><span class="p">,</span> <span class="n">fromEmail</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="configure_log"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.configuration.configure_log">[docs]</a><span class="k">def</span> <span class="nf">configure_log</span><span class="p">():</span>
+    <span class="n">smtp</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">pwd</span><span class="p">,</span> <span class="n">fromEmail</span> <span class="o">=</span> <span class="n">smtp_config</span><span class="p">()</span>
+    
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">readfp</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">))</span>
+    <span class="n">toEmail</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Logging&quot;</span><span class="p">,</span> <span class="s">&quot;to&quot;</span><span class="p">)</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Logging&quot;</span><span class="p">,</span> <span class="s">&quot;file&quot;</span><span class="p">)</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    mailHandler = logging.handlers.SMTPHandler(mailhost=smtp, fromaddr=fromEmail,</span>
+<span class="sd">                                               toaddrs=toEmail, subject=&#39;Email Statistic - Error log&#39;,</span>
+<span class="sd">                                               credentials=(usr, pwd), secure=tuple())</span>
+<span class="sd">    mailHandler.setLevel(logging.ERROR)</span>
+<span class="sd">    mailHandler.setFormatter(fmt)</span>
+<span class="sd">    log.addHandler(mailHandler)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+Provider	Provider Country	SKU	Developer	Title	Version	Product Type Identifier	Units	Developer Proceeds	Begin Date	End Date	Customer Currency	Country Code	Currency of Proceeds	Apple Identifier	Customer Price	Promo Code	Parent Identifier	Subscription	Period
+APPLE	US	com.poweredbytippr.225besteats	PoweredByTippr	225 Best Eats	1.1.6	7	1	0	11/22/2011	11/22/2011	USD	US	USD	410780921	0	 	 	 	 
+APPLE	US	com.poweredbytippr.tippr	PoweredByTippr	Tippr	1.1.6	1	35	0	11/22/2011	11/22/2011	USD	US	USD	403419877	0	 	 	 	 
+APPLE	US	com.poweredbytippr.tippr	PoweredByTippr	Tippr	1.1.6	7	8	0	11/22/2011	11/22/2011	USD	US	USD	403419877	0	 	 	 	 
+APPLE	US	com.poweredbytippr.225besteats	PoweredByTippr	225 Best Eats	1.1.6	1	2	0	11/22/2011	11/22/2011	USD	US	USD	410780921	0	 	 	 	 

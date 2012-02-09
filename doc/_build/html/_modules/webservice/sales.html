@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webservice.sales &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for webservice.sales</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">web</span>
+<span class="kn">from</span> <span class="nn">appdailysales.date_utils</span> <span class="kn">import</span> <span class="n">date_to_iso8601</span>
+<span class="kn">from</span> <span class="nn">ws_utils</span> <span class="kn">import</span> <span class="n">render_json</span><span class="p">,</span> <span class="n">db</span>
+<span class="kn">from</span> <span class="nn">mimerender</span> <span class="kn">import</span> <span class="n">mimerender</span>
+<span class="kn">from</span> <span class="nn">security</span> <span class="kn">import</span> <span class="n">validate_key</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">sales_mappings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;/stats/(.+)/apps&#39;</span><span class="p">:</span> <span class="s">&#39;PublisherApps&#39;</span><span class="p">,</span>
+    <span class="s">&#39;/stats/(.+)/apps/(.+)&#39;</span><span class="p">:</span> <span class="s">&#39;AppStats&#39;</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="exists_publisher"><a class="viewcode-back" href="../../webservice.html#webservice.sales.exists_publisher">[docs]</a><span class="k">def</span> <span class="nf">exists_publisher</span><span class="p">(</span><span class="n">pub</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pub</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;select count(1) as total from itunes where publisher_name = $pub&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">pub</span><span class="o">=</span><span class="n">pub</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    
+    
+</div>
+<div class="viewcode-block" id="exists_appid"><a class="viewcode-back" href="../../webservice.html#webservice.sales.exists_appid">[docs]</a><span class="k">def</span> <span class="nf">exists_appid</span><span class="p">(</span><span class="n">appid</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">appid</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;select count(1) as total from itunes where title = $appid&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">appid</span><span class="o">=</span><span class="n">appid</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    </div>
+<div class="viewcode-block" id="defaultint"><a class="viewcode-back" href="../../webservice.html#webservice.sales.defaultint">[docs]</a><span class="k">def</span> <span class="nf">defaultint</span><span class="p">(</span><span class="n">ix</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ix</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>        
+        
+    </div>
+<div class="viewcode-block" id="build_app_data"><a class="viewcode-back" href="../../webservice.html#webservice.sales.build_app_data">[docs]</a><span class="k">def</span> <span class="nf">build_app_data</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s">&#39;date&#39;</span>      <span class="p">:</span> <span class="n">date_to_iso8601</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">begin_date</span><span class="p">),</span>
+        <span class="s">&#39;developer&#39;</span> <span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">developer</span><span class="p">,</span>
+        <span class="s">&#39;title&#39;</span>     <span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+        <span class="s">&#39;version&#39;</span>   <span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+        <span class="s">&#39;downloads&#39;</span> <span class="p">:</span> <span class="n">defaultint</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">downloads</span><span class="p">),</span>
+        <span class="s">&#39;updates&#39;</span>   <span class="p">:</span> <span class="n">defaultint</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">updates</span><span class="p">),</span>
+        <span class="s">&#39;publisher&#39;</span> <span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">publisher_name</span>
+    <span class="p">}</span>
+
+</div>
+<div class="viewcode-block" id="PublisherApps"><a class="viewcode-back" href="../../webservice.html#webservice.sales.PublisherApps">[docs]</a><span class="k">class</span> <span class="nc">PublisherApps</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class for rendering templates.</span>
+
+<span class="sd">    Usage example::</span>
+
+<span class="sd">        &gt;&gt;&gt; t = Template(&#39;somefile&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; document = t.render(variables={&#39;ID&#39;: 1234})</span>
+
+<span class="sd">    Rendered document is always returned as a unicode string.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    
+    <span class="nd">@mimerender</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;json&#39;</span><span class="p">,</span> 
+        <span class="n">json</span><span class="o">=</span><span class="n">render_json</span>
+    <span class="p">)</span>
+    <span class="nd">@validate_key</span>
+    
+    
+<div class="viewcode-block" id="PublisherApps.GET"><a class="viewcode-back" href="../../webservice.html#webservice.sales.PublisherApps.GET">[docs]</a>    <span class="k">def</span> <span class="nf">GET</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pub</span><span class="p">):</span>
+        
+        <span class="k">def</span> <span class="nf">get_date_params</span><span class="p">():</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">input</span><span class="p">()</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;start-date&#39;</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;end-date&#39;</span><span class="p">)</span> 
+        
+            <span class="k">if</span> <span class="n">start_date</span> <span class="ow">and</span> <span class="n">end_date</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        
+                        
+        <span class="k">if</span> <span class="n">exists_publisher</span><span class="p">(</span><span class="n">pub</span><span class="p">):</span>
+            
+            <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span> <span class="o">=</span> <span class="n">get_date_params</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">start_date</span> <span class="ow">and</span> <span class="n">end_date</span><span class="p">:</span>
+                <span class="nb">vars</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;pub&#39;</span><span class="p">:</span> <span class="n">pub</span><span class="p">,</span> <span class="s">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">,</span> <span class="s">&#39;end_date&#39;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">}</span> 
+                
+                
+                <span class="n">rs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;&#39;&#39;select begin_date,</span>
+<span class="s">                            developer,</span>
+<span class="s">                            title,    </span>
+<span class="s">                            version,</span>
+<span class="s">                            publisher_name,</span>
+<span class="s">                            (select sum(units) from itunes it2 where it2.type_identifier = &#39;1&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as downloads,</span>
+<span class="s">                            (select sum(units) from itunes it2 where it2.type_identifier = &#39;7&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as updates</span>
+<span class="s">                        from itunes it1</span>
+<span class="s">                     where publisher_name=$pub and begin_date&gt;=$start_date and end_date&lt;=$end_date</span>
+<span class="s">                    group by it1.begin_date, it1.developer, it1.title, it1.version, it1.publisher_name&#39;&#39;&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="p">)</span>
+                
+                
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">appstats</span><span class="o">=</span><span class="p">[</span><span class="n">build_app_data</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span><span class="p">])</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="s">&#39;Invalid publisher name&#39;</span><span class="p">)</span>
+        
+        
+        
+        
+        
+        </div></div>
+<div class="viewcode-block" id="AppStats"><a class="viewcode-back" href="../../webservice.html#webservice.sales.AppStats">[docs]</a><span class="k">class</span> <span class="nc">AppStats</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@mimerender</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;json&#39;</span><span class="p">,</span> 
+        <span class="n">json</span><span class="o">=</span><span class="n">render_json</span>
+    <span class="p">)</span>
+    <span class="nd">@validate_key</span>
+<div class="viewcode-block" id="AppStats.GET"><a class="viewcode-back" href="../../webservice.html#webservice.sales.AppStats.GET">[docs]</a>    <span class="k">def</span> <span class="nf">GET</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pub</span><span class="p">,</span> <span class="n">app_id</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="n">exists_publisher</span><span class="p">(</span><span class="n">pub</span><span class="p">):</span>
+            
+            <span class="k">if</span> <span class="n">exists_appid</span><span class="p">(</span><span class="n">app_id</span><span class="p">):</span>
+                <span class="nb">vars</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;pub&#39;</span><span class="p">:</span> <span class="n">pub</span><span class="p">,</span> <span class="s">&#39;app_id&#39;</span><span class="p">:</span> <span class="n">app_id</span><span class="p">}</span> 
+                    
+                <span class="n">rs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;&#39;&#39;select begin_date,</span>
+<span class="s">                        developer,</span>
+<span class="s">                        title,    </span>
+<span class="s">                        version,</span>
+<span class="s">                        publisher_name,</span>
+<span class="s">                        (select sum(units) from itunes it2 where it2.type_identifier = &#39;1&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as downloads,</span>
+<span class="s">                        (select sum(units) from itunes it2 where it2.type_identifier = &#39;7&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as updates</span>
+<span class="s">                    from itunes it1</span>
+<span class="s">                 where publisher_name=$pub and begin_date &lt; now() and title = $app_id</span>
+<span class="s">                group by it1.begin_date, it1.developer, it1.title, it1.version, it1.publisher_name&#39;&#39;&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="p">)</span>
+                
+                <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">appstats</span><span class="o">=</span><span class="p">[</span><span class="n">build_app_data</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span><span class="p">])</span>
+            
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="s">&#39;Invalid App Id&#39;</span><span class="p">)</span>  
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="s">&#39;Invalid publisher name&#39;</span><span class="p">)</span>        
+        
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>reports Package &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="index.html" />
+    <link rel="prev" title="reports Package" href="" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="reports Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="reports-package">
+<h1>reports Package<a class="headerlink" href="#reports-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-reports.itunes_reports">
+<span id="itunes-reports-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">itunes_reports</span></tt> Module<a class="headerlink" href="#module-reports.itunes_reports" title="Permalink to this headline">¶</a></h2>
+<p>Created on 01/11/2011</p>
+<dl class="class">
+<dt id="reports.itunes_reports.MTDReport">
+<em class="property">class </em><tt class="descclassname">reports.itunes_reports.</tt><tt class="descname">MTDReport</tt><big>(</big><em>connection</em>, <em>output</em><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#MTDReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.MTDReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#reports.report_utils.IterableDataReport" title="reports.report_utils.IterableDataReport"><tt class="xref py py-class docutils literal"><span class="pre">reports.report_utils.IterableDataReport</span></tt></a></p>
+<dl class="method">
+<dt id="reports.itunes_reports.MTDReport.attachment_name">
+<tt class="descname">attachment_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#MTDReport.attachment_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.MTDReport.attachment_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="reports.itunes_reports.MTDReport.headers">
+<tt class="descname">headers</tt><em class="property"> = ['Developer', 'Title', 'Version', 'Last Month Downloads', 'MTD Downloads', ' Last Month Updates', 'Updates']</em><a class="headerlink" href="#reports.itunes_reports.MTDReport.headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="reports.itunes_reports.MTDReport.query">
+<tt class="descname">query</tt><em class="property"> = &quot;\n        select \n            developer, \n            title, \n            version, \n            mtd_downloads(title, version, extract(month from (now() - interval '1 month'))::integer, extract(year from (now() - interval '1 month'))::integer) as LastMonthDowmloads,\n            mtd_downloads(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDDowmloads,\n            mtd_updates(title, version, extract(month from (now() - interval '1 month'))::integer, extract(year from (now() - interval '1 month'))::integer) as LastMonthUpdates,\n            mtd_updates(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDUpdates\n        from itunes\n        WHERE\n            extract(month from begin_date) = extract(month from now())\n        group by\n            developer, title, version\n        order by\n            developer, title, version\n    &quot;</em><a class="headerlink" href="#reports.itunes_reports.MTDReport.query" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="reports.itunes_reports.MTDReport.subject">
+<tt class="descname">subject</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#MTDReport.subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.MTDReport.subject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="reports.itunes_reports.SalesReport">
+<em class="property">class </em><tt class="descclassname">reports.itunes_reports.</tt><tt class="descname">SalesReport</tt><big>(</big><em>connection</em>, <em>output</em><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#SalesReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.SalesReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#reports.report_utils.IterableDataReport" title="reports.report_utils.IterableDataReport"><tt class="xref py py-class docutils literal"><span class="pre">reports.report_utils.IterableDataReport</span></tt></a></p>
+<dl class="method">
+<dt id="reports.itunes_reports.SalesReport.attachment_name">
+<tt class="descname">attachment_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#SalesReport.attachment_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.SalesReport.attachment_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="reports.itunes_reports.SalesReport.headers">
+<tt class="descname">headers</tt><em class="property"> = ['Date', 'Developer', 'Title', 'Version', 'Downloads', 'Updates']</em><a class="headerlink" href="#reports.itunes_reports.SalesReport.headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="reports.itunes_reports.SalesReport.query">
+<tt class="descname">query</tt><em class="property"> = &quot;\n        select begin_date,\n            developer,\n            title,    \n            version,\n            (select sum(units) from itunes it2 where it2.type_identifier = '1' and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as downloads,\n            (select sum(units) from itunes it2 where it2.type_identifier = '7' and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as updates\n        from itunes it1\n         where begin_date &lt; now() \n        group by it1.begin_date, it1.developer, it1.title, it1.version\n        order by developer, title, begin_date\n    &quot;</em><a class="headerlink" href="#reports.itunes_reports.SalesReport.query" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="reports.itunes_reports.SalesReport.subject">
+<tt class="descname">subject</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/itunes_reports.html#SalesReport.subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.itunes_reports.SalesReport.subject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-reports.report_sender">
+<span id="report-sender-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">report_sender</span></tt> Module<a class="headerlink" href="#module-reports.report_sender" title="Permalink to this headline">¶</a></h2>
+<p>Created on 02/11/2011</p>
+<p>&#64;author: usuario</p>
+<dl class="function">
+<dt id="reports.report_sender.main">
+<tt class="descclassname">reports.report_sender.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/report_sender.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_sender.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="reports.report_sender.send_csv_email">
+<tt class="descclassname">reports.report_sender.</tt><tt class="descname">send_csv_email</tt><big>(</big><em>to</em>, <em>subject</em>, <em>csv</em>, <em>name</em>, <em>content='This email was sent automatically.\r\n\r\nTippr Team'</em><big>)</big><a class="reference internal" href="_modules/reports/report_sender.html#send_csv_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_sender.send_csv_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="reports.report_sender.send_iterable_report">
+<tt class="descclassname">reports.report_sender.</tt><tt class="descname">send_iterable_report</tt><big>(</big><em>reportClass</em>, <em>conn</em>, <em>to</em><big>)</big><a class="reference internal" href="_modules/reports/report_sender.html#send_iterable_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_sender.send_iterable_report" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-reports.report_utils">
+<span id="report-utils-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">report_utils</span></tt> Module<a class="headerlink" href="#module-reports.report_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="reports.report_utils.CSVWriter">
+<em class="property">class </em><tt class="descclassname">reports.report_utils.</tt><tt class="descname">CSVWriter</tt><big>(</big><em>output</em><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#CSVWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.CSVWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="reports.report_utils.CSVWriter.write_row">
+<tt class="descname">write_row</tt><big>(</big><em>row</em><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#CSVWriter.write_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.CSVWriter.write_row" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="reports.report_utils.IterableDataReport">
+<em class="property">class </em><tt class="descclassname">reports.report_utils.</tt><tt class="descname">IterableDataReport</tt><big>(</big><em>connection</em>, <em>output</em><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#IterableDataReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.IterableDataReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="reports.report_utils.IterableDataReport.next">
+<tt class="descname">next</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#IterableDataReport.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.IterableDataReport.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="reports.report_utils.IterableDataReport.today">
+<tt class="descname">today</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#IterableDataReport.today"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.IterableDataReport.today" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="reports.report_utils.IterableDataReport.write_row">
+<tt class="descname">write_row</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reports/report_utils.html#IterableDataReport.write_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reports.report_utils.IterableDataReport.write_row" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">reports Package</a><ul>
+<li><a class="reference internal" href="#module-reports.itunes_reports"><tt class="docutils literal"><span class="pre">itunes_reports</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-reports.report_sender"><tt class="docutils literal"><span class="pre">report_sender</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-reports.report_utils"><tt class="docutils literal"><span class="pre">report_utils</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href=""
+                        title="previous chapter">reports Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/reports.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="reports Package"
+             >previous</a> |</li>
+        <li><a href="index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

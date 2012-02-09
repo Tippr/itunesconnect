@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>REST API Interface &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../index.html" />
+    <link rel="next" title="appdailysales Package" href="../appdailysales.html" />
+    <link rel="prev" title="Welcome to iTunesConnect’s documentation!" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../appdailysales.html" title="appdailysales Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to iTunesConnect’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="rest-api-interface">
+<h1>REST API Interface<a class="headerlink" href="#rest-api-interface" title="Permalink to this headline">¶</a></h1>
+<p>The iTunes REST API exposes the data pulled from iTunesConnect that contains the sales report of the applications published in the App Store. It allows to query the information for downloads and updates for a given publisher accepting several parameters such as app names or date ranges.</p>
+</div>
+<div class="section" id="base-url">
+<h1>Base URL<a class="headerlink" href="#base-url" title="Permalink to this headline">¶</a></h1>
+<p>All URLs referenced in the documentation has the following base:</p>
+<p><a class="reference external" href="http://96.126.123.172/stats/">http://96.126.123.172/stats/</a></p>
+</div>
+<div class="section" id="response-formats">
+<h1>Response Formats<a class="headerlink" href="#response-formats" title="Permalink to this headline">¶</a></h1>
+<p>iTunes API only supports returning resource representations as JSON. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">GET</span> <span class="o">/</span><span class="n">tippr</span><span class="o">/</span><span class="n">apps</span>
+</pre></div>
+</div>
+<p>response is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+<span class="s">&quot;appstats&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+        <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;20111122T00:00Z&quot;</span><span class="p">,</span>
+            <span class="s">&quot;developer&quot;</span><span class="p">:</span> <span class="s">&quot;PoweredByTippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;downloads&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+            <span class="s">&quot;publisher&quot;</span><span class="p">:</span> <span class="s">&quot;tippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Tippr&quot;</span><span class="p">,</span>
+            <span class="s">&quot;updates&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.1.6&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+        <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;20111123T00:00Z&quot;</span><span class="p">,</span>
+            <span class="s">&quot;developer&quot;</span><span class="p">:</span> <span class="s">&quot;PoweredByTippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;downloads&quot;</span><span class="p">:</span> <span class="mi">435</span><span class="p">,</span>
+            <span class="s">&quot;publisher&quot;</span><span class="p">:</span> <span class="s">&quot;tippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Tippr&quot;</span><span class="p">,</span>
+            <span class="s">&quot;updates&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.1.6&quot;</span>
+        <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exceptions">
+<h1>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h1>
+<p>iTunes API returns exceptions in the HTTP header as HTTP Errors when something goes wrong.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="43%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">URL Parameter</th>
+<th class="head">Reason</th>
+<th class="head">HTTP Error</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>publisher-name</td>
+<td>Does not exists</td>
+<td>404 (Not Found)</td>
+</tr>
+<tr class="row-odd"><td>app-id</td>
+<td>Does not exists</td>
+<td>400 Bad Request</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="security">
+<h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
+<p>The iTunes API requires an API Key in order to work. The API Key should be sent as part of the HTTP header as a parameter named X-API-KEY. Exception might be raised according the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="70%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Scenario</th>
+<th class="head">Response</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>X-API-KEY not sent as HTTP header parameter</td>
+<td>400 Bad Request</td>
+</tr>
+<tr class="row-odd"><td>X-API-KEY is invalid/improper format</td>
+<td>400 Bad Request</td>
+</tr>
+<tr class="row-even"><td>X-API-KEY is unknown</td>
+<td>403 Forbidden</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-of-request-with-api-key">
+<h1>Example of request with API-KEY<a class="headerlink" href="#example-of-request-with-api-key" title="Permalink to this headline">¶</a></h1>
+<p>An example of request:</p>
+<div class="highlight-python"><pre>curl -H "Accept:application/json" -H "X-API-KEY:hpG9DPvhCEpzkZqftqsgo3sS5gAyd1wu633h5PhELBo" "http://96.126.123.172:8080/stats/tippr/apps/Tippr"</pre>
+</div>
+</div>
+<div class="section" id="paging-control-headers">
+<h1>Paging Control Headers<a class="headerlink" href="#paging-control-headers" title="Permalink to this headline">¶</a></h1>
+<p>The client can specify HTTP parameters to control the paging of the result set returned by the API. The parameters, described in the table below, are optional.</p>
+<p>When the data is received, the API informs of the paging using RESPONSE headers, according the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>X-PAGE-SIZE</td>
+<td>The number of results per page requested in the HTTP request</td>
+</tr>
+<tr class="row-odd"><td>X-PAGE-NUMBER</td>
+<td>The page number returned</td>
+</tr>
+<tr class="row-even"><td>X-PAGE-COUNT</td>
+<td>The number of pages in the result set</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="rest-resources-for-apps">
+<h1>REST Resources for Apps<a class="headerlink" href="#rest-resources-for-apps" title="Permalink to this headline">¶</a></h1>
+<p>URI:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">GET</span> <span class="o">/</span><span class="p">[</span><span class="n">publisher</span><span class="o">-</span><span class="n">name</span><span class="p">]</span><span class="o">/</span><span class="n">apps</span>
+</pre></div>
+</div>
+<p><strong>App properties</strong></p>
+<p>An iTunes app is represented by the following properties:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+<span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;20111122T00:00Z&quot;</span><span class="p">,</span>
+<span class="s">&quot;developer&quot;</span><span class="p">:</span> <span class="s">&quot;PoweredByTippr&quot;</span><span class="p">,</span>
+<span class="s">&quot;downloads&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+<span class="s">&quot;publisher&quot;</span><span class="p">:</span> <span class="s">&quot;tippr&quot;</span><span class="p">,</span>
+<span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Tippr&quot;</span><span class="p">,</span>
+<span class="s">&quot;updates&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.1.6&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="apps-method">
+<h1>Apps Method<a class="headerlink" href="#apps-method" title="Permalink to this headline">¶</a></h1>
+<p><strong>Pull the information for a single app</strong></p>
+<p><em>Format</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">GET</span> <span class="o">/</span><span class="p">[</span><span class="n">publisher</span><span class="o">-</span><span class="n">name</span><span class="p">]</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="p">[</span><span class="n">app</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><em>Example</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">GET</span> <span class="o">/</span><span class="n">tippr</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">Tippr</span>
+</pre></div>
+</div>
+<p><em>Response</em>:</p>
+<div class="highlight-python"><pre>    {
+"date": "20111122T00:00Z",
+"developer": "PoweredByTippr",
+"downloads": 35,
+"publisher": "tippr",
+"title": "Tippr",
+"updates": 8,
+"version": "1.1.6"</pre>
+</div>
+<p>}</p>
+<p><strong>Pull the information for all the apps for a given publisher between dates</strong></p>
+<p><em>Format</em>:</p>
+<div class="highlight-python"><pre>GET /[publisher-name]/apps?start-date=&lt;start-date&gt;&amp;end-date=&lt;end-date&gt;</pre>
+</div>
+<p><em>Example</em>:</p>
+<div class="highlight-python"><pre>GET /tippr/apps?start-date=20111122&amp;end-date=20111123</pre>
+</div>
+<p><em>Response</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+<span class="s">&quot;appstats&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+        <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;20111122T00:00Z&quot;</span><span class="p">,</span>
+            <span class="s">&quot;developer&quot;</span><span class="p">:</span> <span class="s">&quot;PoweredByTippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;downloads&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+            <span class="s">&quot;publisher&quot;</span><span class="p">:</span> <span class="s">&quot;tippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Tippr&quot;</span><span class="p">,</span>
+            <span class="s">&quot;updates&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.1.6&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+        <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;20111123T00:00Z&quot;</span><span class="p">,</span>
+            <span class="s">&quot;developer&quot;</span><span class="p">:</span> <span class="s">&quot;PoweredByTippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;downloads&quot;</span><span class="p">:</span> <span class="mi">435</span><span class="p">,</span>
+            <span class="s">&quot;publisher&quot;</span><span class="p">:</span> <span class="s">&quot;tippr&quot;</span><span class="p">,</span>
+        <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Tippr&quot;</span><span class="p">,</span>
+            <span class="s">&quot;updates&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.1.6&quot;</span>
+        <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">REST API Interface</a></li>
+<li><a class="reference internal" href="#base-url">Base URL</a></li>
+<li><a class="reference internal" href="#response-formats">Response Formats</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#example-of-request-with-api-key">Example of request with API-KEY</a></li>
+<li><a class="reference internal" href="#paging-control-headers">Paging Control Headers</a></li>
+<li><a class="reference internal" href="#rest-resources-for-apps">REST Resources for Apps</a></li>
+<li><a class="reference internal" href="#apps-method">Apps Method</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to iTunesConnect&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../appdailysales.html"
+                        title="next chapter">appdailysales Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/RESTAPI/general.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../appdailysales.html" title="appdailysales Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to iTunesConnect’s documentation!"
+             >previous</a> |</li>
+        <li><a href="../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

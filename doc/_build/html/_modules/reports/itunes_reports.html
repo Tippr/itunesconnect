@@ -1,0 +1,152 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>reports.itunes_reports &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for reports.itunes_reports</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 01/11/2011</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span>
+
+<span class="kn">from</span> <span class="nn">reports.report_utils</span> <span class="kn">import</span> <span class="n">IterableDataReport</span>
+
+<div class="viewcode-block" id="SalesReport"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.SalesReport">[docs]</a><span class="k">class</span> <span class="nc">SalesReport</span><span class="p">(</span><span class="n">IterableDataReport</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Date&#39;</span><span class="p">,</span> <span class="s">&#39;Developer&#39;</span><span class="p">,</span> <span class="s">&#39;Title&#39;</span><span class="p">,</span> <span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="s">&#39;Downloads&#39;</span><span class="p">,</span> <span class="s">&#39;Updates&#39;</span><span class="p">]</span>
+    
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">        select begin_date,</span>
+<span class="s">            developer,</span>
+<span class="s">            title,    </span>
+<span class="s">            version,</span>
+<span class="s">            (select sum(units) from itunes it2 where it2.type_identifier = &#39;1&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as downloads,</span>
+<span class="s">            (select sum(units) from itunes it2 where it2.type_identifier = &#39;7&#39; and it1.developer = it2.developer and it1.title = it2.title and it1.begin_date=it2.begin_date) as updates</span>
+<span class="s">        from itunes it1</span>
+<span class="s">         where begin_date &lt; now() </span>
+<span class="s">        group by it1.begin_date, it1.developer, it1.title, it1.version</span>
+<span class="s">        order by developer, title, begin_date</span>
+<span class="s">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="SalesReport.subject"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.SalesReport.subject">[docs]</a>    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;iTunes Connect Sales Report - </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="SalesReport.attachment_name"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.SalesReport.attachment_name">[docs]</a>    <span class="k">def</span> <span class="nf">attachment_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;sales-report-</span><span class="si">%s</span><span class="s">.csv&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    
+</div></div>
+<div class="viewcode-block" id="MTDReport"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.MTDReport">[docs]</a><span class="k">class</span> <span class="nc">MTDReport</span><span class="p">(</span><span class="n">IterableDataReport</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Developer&#39;</span><span class="p">,</span> <span class="s">&#39;Title&#39;</span><span class="p">,</span> <span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="s">&#39;Last Month Downloads&#39;</span><span class="p">,</span> <span class="s">&#39;MTD Downloads&#39;</span><span class="p">,</span> <span class="s">&#39; Last Month Updates&#39;</span><span class="p">,</span> <span class="s">&#39;Updates&#39;</span><span class="p">]</span>
+    
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">        select </span>
+<span class="s">            developer, </span>
+<span class="s">            title, </span>
+<span class="s">            version, </span>
+<span class="s">            mtd_downloads(title, version, extract(month from (now() - interval &#39;1 month&#39;))::integer, extract(year from (now() - interval &#39;1 month&#39;))::integer) as LastMonthDowmloads,</span>
+<span class="s">            mtd_downloads(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDDowmloads,</span>
+<span class="s">            mtd_updates(title, version, extract(month from (now() - interval &#39;1 month&#39;))::integer, extract(year from (now() - interval &#39;1 month&#39;))::integer) as LastMonthUpdates,</span>
+<span class="s">            mtd_updates(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDUpdates</span>
+<span class="s">        from itunes</span>
+<span class="s">        WHERE</span>
+<span class="s">            extract(month from begin_date) = extract(month from now())</span>
+<span class="s">        group by</span>
+<span class="s">            developer, title, version</span>
+<span class="s">        order by</span>
+<span class="s">            developer, title, version</span>
+<span class="s">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="MTDReport.subject"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.MTDReport.subject">[docs]</a>    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;iTunes Connect MTD Report - </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="MTDReport.attachment_name"><a class="viewcode-back" href="../../reports.html#reports.itunes_reports.MTDReport.attachment_name">[docs]</a>    <span class="k">def</span> <span class="nf">attachment_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;mtd-report-</span><span class="si">%s</span><span class="s">.csv&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">today</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

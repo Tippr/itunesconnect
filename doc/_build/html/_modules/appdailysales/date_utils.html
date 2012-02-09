@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>appdailysales.date_utils &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for appdailysales.date_utils</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<div class="viewcode-block" id="get_week_days"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.get_week_days">[docs]</a><span class="k">def</span> <span class="nf">get_week_days</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">week</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">+</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">7</span> <span class="o">-</span> <span class="n">d</span><span class="o">.</span><span class="n">weekday</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">weekday</span><span class="p">())</span>
+    <span class="n">dlt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span> <span class="o">=</span> <span class="p">(</span><span class="n">week</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span> <span class="o">+</span> <span class="n">dlt</span><span class="p">,</span>  <span class="n">d</span> <span class="o">+</span> <span class="n">dlt</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="current_start_date"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.current_start_date">[docs]</a><span class="k">def</span> <span class="nf">current_start_date</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="s">&#39;week&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_week_days</span><span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">isocalendar</span><span class="p">()[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">freq</span> <span class="o">==</span> <span class="s">&#39;month&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date</span><span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">freq</span> <span class="o">==</span> <span class="s">&#39;year&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date</span><span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="current_daily"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.current_daily">[docs]</a><span class="k">def</span> <span class="nf">current_daily</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="p">,</span> <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()):</span>
+    <span class="n">current_freq_start_date</span> <span class="o">=</span> <span class="n">current_start_date</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">today</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">current_freq_start_date</span> <span class="ow">and</span> <span class="n">from_date</span> <span class="o">&lt;=</span> <span class="n">current_freq_start_date</span> <span class="o">&lt;=</span> <span class="n">to_date</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">current_freq_start_date</span><span class="p">,</span> <span class="n">from_date</span><span class="p">),</span> <span class="n">to_date</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="format_date"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.format_date">[docs]</a><span class="k">def</span> <span class="nf">format_date</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">mktime</span><span class="p">,</span> <span class="n">strptime</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">mktime</span><span class="p">(</span><span class="n">strptime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s">&quot;%Y%m</span><span class="si">%d</span><span class="s">T%H:%MZ&quot;</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">=</span> <span class="n">d</span><span class="p">[:</span><span class="mi">14</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;Z&#39;</span>
+    <span class="k">return</span> <span class="n">ret</span>
+        </div>
+<div class="viewcode-block" id="format_dates"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.format_dates">[docs]</a><span class="k">def</span> <span class="nf">format_dates</span><span class="p">(</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">format_date</span><span class="p">(</span><span class="n">from_date</span><span class="p">),</span> <span class="n">format_date</span><span class="p">(</span><span class="n">to_date</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="date_to_iso8601"><a class="viewcode-back" href="../../appdailysales.html#appdailysales.date_utils.date_to_iso8601">[docs]</a><span class="k">def</span> <span class="nf">date_to_iso8601</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y%m</span><span class="si">%d</span><span class="s">T%H:%MZ&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="bp">None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">iTunesConnect 0.9 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

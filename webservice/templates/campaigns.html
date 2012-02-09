@@ -1,0 +1,57 @@
+$def with (result)
+
+<html>
+<head><title>Campaings Statistics Report</title></head>
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    table {
+        width:100%;
+    }
+    th {
+        height:50px;
+    } 
+</style>
+<body>
+$ result = result['campaigns']
+$if result:
+    <table>
+      <tr>
+        <td> Date From </td> 
+        <td> Date To </td> 
+        <td> Provider </td> 
+        <td> Publisher </td> 
+        <td> Emails Sent </td> 
+        <td> Opens </td> 
+        <td> Clicks </td> 
+        <td> Hardbounces</td> 
+        <td> Softbounces </td> 
+        <td> OptOut </td> 
+        <td> Spam </td> 
+        <td> Pv </td> 
+        <td> Purchase </td> 
+        <td> Purchase price </td> 
+        <td> Rev </td> 
+      </tr>
+      $for data in result:
+      <tr>
+        <td> $data['from_date'] </td>
+        <td> $data['to_date'] </td>
+        <td> $data['esp'] </td>
+        <td> $data['publisher'] </td>
+        <td> $data['cs_emailssent'] </td>
+        <td> $data['cs_opens'] </td>
+        <td> $data['cs_clicks'] </td>
+        <td> $data['cs_hardbounces'] </td>
+        <td> $data['cs_softbounces'] </td>
+        <td> $data['cs_optout'] </td>
+        <td> $data['cs_spamabuse'] </td>
+        <td> $data['cs_pv'] </td>
+        <td> $data['cs_purchase'] </td>
+        <td> $data['cs_purchase_price'] </td>
+        <td> $data['cs_rev'] </td>
+      </tr>
+    </table>
+</body>
+</html>

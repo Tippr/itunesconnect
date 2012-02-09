@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webservice Package &mdash; iTunesConnect 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="iTunesConnect 0.9 documentation" href="index.html" />
+    <link rel="prev" title="reports Package" href="reports.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reports.html" title="reports Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="webservice-package">
+<h1>webservice Package<a class="headerlink" href="#webservice-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-webservice.sales">
+<span id="sales-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">sales</span></tt> Module<a class="headerlink" href="#module-webservice.sales" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="webservice.sales.AppStats">
+<em class="property">class </em><tt class="descclassname">webservice.sales.</tt><tt class="descname">AppStats</tt><a class="reference internal" href="_modules/webservice/sales.html#AppStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.AppStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="webservice.sales.AppStats.GET">
+<tt class="descname">GET</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#AppStats.GET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.AppStats.GET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="webservice.sales.PublisherApps">
+<em class="property">class </em><tt class="descclassname">webservice.sales.</tt><tt class="descname">PublisherApps</tt><a class="reference internal" href="_modules/webservice/sales.html#PublisherApps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.PublisherApps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class for rendering templates.</p>
+<p>Usage example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s">&#39;somefile&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;ID&#39;</span><span class="p">:</span> <span class="mi">1234</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Rendered document is always returned as a unicode string.</p>
+<dl class="method">
+<dt id="webservice.sales.PublisherApps.GET">
+<tt class="descname">GET</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#PublisherApps.GET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.PublisherApps.GET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="webservice.sales.build_app_data">
+<tt class="descclassname">webservice.sales.</tt><tt class="descname">build_app_data</tt><big>(</big><em>r</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#build_app_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.build_app_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.sales.defaultint">
+<tt class="descclassname">webservice.sales.</tt><tt class="descname">defaultint</tt><big>(</big><em>ix</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#defaultint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.defaultint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.sales.exists_appid">
+<tt class="descclassname">webservice.sales.</tt><tt class="descname">exists_appid</tt><big>(</big><em>appid</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#exists_appid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.exists_appid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.sales.exists_publisher">
+<tt class="descclassname">webservice.sales.</tt><tt class="descname">exists_publisher</tt><big>(</big><em>pub</em><big>)</big><a class="reference internal" href="_modules/webservice/sales.html#exists_publisher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.sales.exists_publisher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-webservice.security">
+<span id="security-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">security</span></tt> Module<a class="headerlink" href="#module-webservice.security" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="webservice.security.exist_key">
+<tt class="descclassname">webservice.security.</tt><tt class="descname">exist_key</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/webservice/security.html#exist_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.security.exist_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.security.is_valid_key">
+<tt class="descclassname">webservice.security.</tt><tt class="descname">is_valid_key</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/webservice/security.html#is_valid_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.security.is_valid_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.security.validate_key">
+<tt class="descclassname">webservice.security.</tt><tt class="descname">validate_key</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="_modules/webservice/security.html#validate_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.security.validate_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-webservice.ws">
+<span id="ws-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">ws</span></tt> Module<a class="headerlink" href="#module-webservice.ws" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-webservice.ws_utils">
+<span id="ws-utils-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">ws_utils</span></tt> Module<a class="headerlink" href="#module-webservice.ws_utils" title="Permalink to this headline">¶</a></h2>
+<p>Created on 08/11/2011</p>
+<dl class="exception">
+<dt id="webservice.ws_utils.BadRequestWithMessage">
+<em class="property">exception </em><tt class="descclassname">webservice.ws_utils.</tt><tt class="descname">BadRequestWithMessage</tt><big>(</big><em>message=None</em><big>)</big><a class="reference internal" href="_modules/webservice/ws_utils.html#BadRequestWithMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webservice.ws_utils.BadRequestWithMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">web.webapi.HTTPError</span></tt></p>
+<dl class="attribute">
+<dt id="webservice.ws_utils.BadRequestWithMessage.message">
+<tt class="descname">message</tt><em class="property"> = 'Bad request'</em><a class="headerlink" href="#webservice.ws_utils.BadRequestWithMessage.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="webservice.ws_utils.dthandler">
+<tt class="descclassname">webservice.ws_utils.</tt><tt class="descname">dthandler</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#webservice.ws_utils.dthandler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.ws_utils.render_html">
+<tt class="descclassname">webservice.ws_utils.</tt><tt class="descname">render_html</tt><big>(</big><em>template</em><big>)</big><a class="headerlink" href="#webservice.ws_utils.render_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webservice.ws_utils.render_json">
+<tt class="descclassname">webservice.ws_utils.</tt><tt class="descname">render_json</tt><big>(</big><em>**args</em><big>)</big><a class="headerlink" href="#webservice.ws_utils.render_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">webservice Package</a><ul>
+<li><a class="reference internal" href="#module-webservice.sales"><tt class="docutils literal"><span class="pre">sales</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-webservice.security"><tt class="docutils literal"><span class="pre">security</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-webservice.ws"><tt class="docutils literal"><span class="pre">ws</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-webservice.ws_utils"><tt class="docutils literal"><span class="pre">ws_utils</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="reports.html"
+                        title="previous chapter">reports Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/webservice.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reports.html" title="reports Package"
+             >previous</a> |</li>
+        <li><a href="index.html">iTunesConnect 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tippr Argentina.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
