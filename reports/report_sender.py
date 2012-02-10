@@ -1,8 +1,3 @@
-'''
-Created on 02/11/2011
-
-@author: usuario
-'''
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -12,7 +7,6 @@ from reports.report_utils import CSVWriter
 from reports.itunes_reports import *
 from appdailysales.configuration import configure, configure_reports
 import appdailysales.persistence as p
-
 
 def send_csv_email(to, subject, csv, name, content='This email was sent automatically.\r\n\r\nTippr Team'):
     from appdailysales.smtp import send_email
@@ -33,7 +27,7 @@ def main():
     
     to = configure_reports()
 
-    itunes_reports = [SalesReport, MTDReport, MonthlyRollupReport, LastMonthsReport]
+    itunes_reports = [SalesReport, MTDReport, MonthlyRollupReport]
 
     for report in itunes_reports:
         send_iterable_report(report, conn, to)

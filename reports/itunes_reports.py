@@ -8,7 +8,11 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from reports.report_utils import IterableDataReport
 
 from datetime import datetime
+from datetime import date
 from appdailysales.date_utils import subtract_date
+
+UPDATE_TYPE = '7'
+INSTALL_TYPE = '1'
 
 class SalesReport(IterableDataReport):
     headers = ['Date', 'Developer', 'Title', 'Version', 'Downloads', 'Updates']
@@ -60,90 +64,45 @@ class MTDReport(IterableDataReport):
     def attachment_name(self):
         return 'mtd-report-%s.csv' % self.today()
     
-class MonthlyRollupReport(IterableDataReport):
-    
-    currentMonth = datetime.now().month
-    currentYear = datetime.year
-    
-    headers = ['Developer', 'Title', 'Version']
-    
-    for i in range(12):
-        my_header = str(subtract_date(datetime.today(), month=1).year) + '/' +str(subtract_date(datetime.today(), month=1).month) 
-        headers.append(my_header + ' Downloads')
-        headers.append(my_header + ' Updates')
-        
-        
-    query = '''
-        select 
-            developer, 
-            title, 
-            version, 
-            mtd_downloads(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDDowmloads,
-            mtd_updates(title, version, extract(month from now())::integer, extract(year from now())::integer) as MTDUpdates
-    '''
-    
-    
-    for i in range(12):
-        if i > 0:
-            my_query = ''' 
-             ,mtd_downloads(title, version, extract(month from (now() - interval '1 month'))::integer, extract(year from (now() - interval '1 month'))::integer) as 
-            '''
-            my_query += my_header[i+5]
-            query += my_query
-            
-            
-    query += '''
-         from itunes
-        WHERE
-            extract(month from begin_date) = extract(month from now())
-        group by
-            developer, title, version
-        order by
-            developer, title, version    
-     '''       
-                
-    def subject(self):
-        return 'iTunes Connect MTD Report - %s' % self.today()
-    
-    def attachment_name(self):
-        return 'mtd-report-%s.csv' % self.today()    
-
-UPDATE_TYPE = 7
-INSTALL_TYPE = 1
-
-from datetime import date
 from dateutil.relativedelta import *
 from dateutil.rrule import *
 
-class LastMonthsReport(IterableDataReport):
+def join(s, d=", "):
+    return d.join(s)
+
+class MonthlyRollupReport(IterableDataReport):
+
     @property
     def query(self):
-        query = 'select developer, title, version, %s from itunes i'
-        subqueries = []
-        for date in self.months():
-            name = date.strftime("%b/%Y")
-            subqueries.append(self._build_selection(name + ' Updates', date, UPDATE_TYPE))
-            subqueries.append(self._build_selection(name + ' Installs', date, INSTALL_TYPE))
-        sql = query % ", ".join(subqueries)
-        return sql
+        sql = """
+        select developer, title, version, %(grouped_data)s 
+        from (select developer, title, version, %(subqueries)s from itunes i) raw_data 
+        group by developer, title, version
+        """ 
+        subqueries = [self._build_selection(name, date, type) for date, name, type in self._dynamic_fields()]
+        return sql % {
+                'grouped_data': join(['sum("%s") "%s"' % (h[1], h[1]) for h in self._dynamic_fields()]),
+                'subqueries'  : join(subqueries)}
 
     @property
     def headers(self):
-        header = ['Developer', 'Title', 'Version'] 
-        for month in self.months():
-            name = month.strftime("%b/%Y")
-            header.append(name + ' Updates')
-            header.append(name + ' Installs')
-        return header
-
-    def months(self):
-        return rrule(MONTHLY, dtstart=date.today() - relativedelta(months=12), count=12)
+        return ['Developer', 'Title', 'Version'] + [f[1] for f in self._dynamic_fields()]
 
     def subject(self):
-        return 'Last Months Report - %s' % self.today()
+        return 'Monthly Rollup Report - %s' % self.today()
     
     def attachment_name(self):
-        return 'lastmonths-report-%s.csv' % self.today()    
+        return 'monthy-rollup-report-%s.csv' % self.today()    
+
+    def _dynamic_fields(self):
+        months = list(rrule(MONTHLY, dtstart=date.today() - relativedelta(months=12), count=12))
+        months.reverse()
+        fields = []
+        for month in months:
+            name = month.strftime("%b/%Y")
+            fields.append((month, name + ' Updates', UPDATE_TYPE))
+            fields.append((month, name + ' Installs', INSTALL_TYPE))
+        return fields
 
     def _build_selection(self, name, date, type):
         sql = """(select sum(units) 
@@ -152,4 +111,3 @@ class LastMonthsReport(IterableDataReport):
         and type_identifier = '%s'
         and date_trunc('month', begin_date) = date_trunc('month', TIMESTAMP '%s')) \"%s\""""
         return sql % (type, date, name)
-
