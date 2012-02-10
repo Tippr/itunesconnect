@@ -33,7 +33,7 @@ def main():
     
     to = configure_reports()
 
-    itunes_reports = [SalesReport, MTDReport, MonthlyRollupReport]
+    itunes_reports = [SalesReport, MTDReport, MonthlyRollupReport, LastMonthsReport]
 
     for report in itunes_reports:
         send_iterable_report(report, conn, to)

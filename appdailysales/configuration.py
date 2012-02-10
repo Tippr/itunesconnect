@@ -33,7 +33,6 @@ def configure_itunes():
     config.add_section("iTunes")
     config.set("iTunes", 'user', 'ios-stats@tippr.com')
     config.set("iTunes", 'password', 'Tippr2011')
-    
 
 def configure_reports():
     cfg = ConfigParser.ConfigParser()
